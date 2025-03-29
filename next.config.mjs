@@ -8,7 +8,7 @@ try {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export', // Specify the output directory for the exported files
-  basePath: '/House-of-Algo', // Replace 'repo-name' with your actual repository name
+  // basePath: '/House-of-Algo', // Removed basePath to serve from root
   eslint: {
     ignoreDuringBuilds: true,
   },
