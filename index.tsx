@@ -28,8 +28,8 @@ export default function HouseOfAlgos() {
   const [activeSection, setActiveSection] = useState("home")
 
   // Add this debounce function at the top of your component
-  function debounce(func, wait) {
-    let timeout
+  function debounce(func: Function, wait: number): (...args: any[]) => void {
+    let timeout: NodeJS.Timeout
     return function executedFunction(...args) {
       const later = () => {
         clearTimeout(timeout)
@@ -66,9 +66,9 @@ export default function HouseOfAlgos() {
     `
     document.head.appendChild(style)
 
-    const handleScroll = debounce(() => {
-      const sections = document.querySelectorAll("section")
-      let current = ""
+    const handleScroll = debounce((): void => {
+      const sections: NodeListOf<HTMLElement> = document.querySelectorAll("section")
+      let current: string = ""
 
       sections.forEach((section) => {
         const sectionTop = section.offsetTop
@@ -195,17 +195,19 @@ export default function HouseOfAlgos() {
         >
           {/* Video Background */}
           <div className="absolute inset-0 z-0 w-full h-full">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ zIndex: 0 }}
-            >
-              <source src="/vid.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+              {/* Video Background */}
+              {/* <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{ zIndex: 0 }}
+              >
+                <source src="/vid.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video> */}
+
             {/* Semi-transparent overlay to ensure text readability */}
             <div className="absolute inset-0 bg-gradient-to-r from-purple-900/40 to-purple-950/40"></div>
           </div>
@@ -955,4 +957,3 @@ export default function HouseOfAlgos() {
     </div>
   )
 }
-

@@ -1,22 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { ArrowRight, RefreshCw } from "lucide-react"
+import { useEffect, useState } from "react";
+import { ArrowRight, RefreshCw } from "lucide-react";
+import axios from "axios";
 
-const currencies = [
-  { code: "USD", name: "US Dollar", flag: "🇺🇸" },
-  { code: "EUR", name: "Euro", flag: "🇪🇺" },
-  { code: "GBP", name: "British Pound", flag: "🇬🇧" },
-  { code: "JPY", name: "Japanese Yen", flag: "🇯🇵" },
-  { code: "AUD", name: "Australian Dollar", flag: "🇦🇺" },
-  { code: "CAD", name: "Canadian Dollar", flag: "🇨🇦" },
-  { code: "CHF", name: "Swiss Franc", flag: "🇨🇭" },
-  { code: "CNY", name: "Chinese Yuan", flag: "🇨🇳" },
-  { code: "INR", name: "Indian Rupee", flag: "🇮🇳" },
-]
+const API_URL = "https://api.exchangerate-api.com/v4/latest/USD"; // Example API endpoint
 
-// Mock exchange rates (in a real app, these would come from an API)
-const mockRates = {
+const mockRates: { [key: string]: number } = {
   USD: 1,
   EUR: 0.92,
   GBP: 0.79,
@@ -26,41 +16,69 @@ const mockRates = {
   CHF: 0.9,
   CNY: 7.24,
   INR: 83.42,
-}
+};
+
+const currencies: { code: string; name: string; flag: string }[] = [
+  { code: "USD", name: "US Dollar", flag: "🇺🇸" },
+  { code: "EUR", name: "Euro", flag: "🇪🇺" },
+  { code: "GBP", name: "British Pound", flag: "🇬🇧" },
+  { code: "JPY", name: "Japanese Yen", flag: "🇯🇵" },
+  { code: "AUD", name: "Australian Dollar", flag: "🇦🇺" },
+  { code: "CAD", name: "Canadian Dollar", flag: "🇨🇦" },
+  { code: "CHF", name: "Swiss Franc", flag: "🇨🇭" },
+  { code: "CNY", name: "Chinese Yuan", flag: "🇨🇳" },
+  { code: "INR", name: "Indian Rupee", flag: "🇮🇳" },
+];
 
 export function ForexConverter() {
-  const [amount, setAmount] = useState(1000)
-  const [fromCurrency, setFromCurrency] = useState("USD")
-  const [toCurrency, setToCurrency] = useState("EUR")
-  const [result, setResult] = useState(0)
-  const [isLoading, setIsLoading] = useState(false)
-  const [lastUpdated, setLastUpdated] = useState(new Date())
+  const [availableCurrencies, setAvailableCurrencies] = useState<string[]>([]);
+  const [amount, setAmount] = useState(1000);
+  const [fromCurrency, setFromCurrency] = useState("USD");
+  const [toCurrency, setToCurrency] = useState("EUR");
+  const [result, setResult] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  // Calculate conversion
+  useEffect(() => {
+    const fetchRates = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(API_URL);
+        setAvailableCurrencies(Object.keys(response.data.rates));
+        setLastUpdated(new Date());
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRates();
+  }, []);
+
   useEffect(() => {
     const convertCurrency = () => {
-      const fromRate = mockRates[fromCurrency as keyof typeof mockRates]
-      const toRate = mockRates[toCurrency as keyof typeof mockRates]
-      const converted = (amount / fromRate) * toRate
-      setResult(converted)
-    }
+      const fromRate = mockRates[fromCurrency as keyof typeof mockRates];
+      const toRate = mockRates[toCurrency as keyof typeof mockRates];
+      const converted = (amount / fromRate) * toRate;
+      setResult(converted);
+    };
 
-    convertCurrency()
-  }, [amount, fromCurrency, toCurrency])
+    convertCurrency();
+  }, [amount, fromCurrency, toCurrency]);
 
   const handleSwap = () => {
-    setFromCurrency(toCurrency)
-    setToCurrency(fromCurrency)
-  }
+    setFromCurrency(toCurrency);
+    setToCurrency(fromCurrency);
+  };
 
   const handleRefresh = () => {
-    setIsLoading(true)
-    // Simulate API call
+    setIsLoading(true);
     setTimeout(() => {
-      setLastUpdated(new Date())
-      setIsLoading(false)
-    }, 1000)
-  }
+      setLastUpdated(new Date());
+      setIsLoading(false);
+    }, 1000);
+  };
 
   return (
     <div className="bg-gray-800/60 backdrop-blur-md rounded-2xl p-6 border border-gray-700 shadow-xl">
@@ -168,6 +186,5 @@ export function ForexConverter() {
         ))}
       </div>
     </div>
-  )
+  );
 }
-
